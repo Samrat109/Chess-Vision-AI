@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ChessVision AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: rgba(0, 0, 0, 0.5);
+            color: #f9fafb;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #374151;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #34d399;
+        }
+
+        .status {
+            color: #34d399;
+            font-size: 14px;
+        }
+
+        main {
+            width: min(1200px, 92%);
+            margin: 40px auto;
+        }
+
+        .intro {
+            margin-bottom: 30px;
+        }
+
+        .intro h1 {
+            font-size: clamp(28px, 4vw, 40px);
+            margin-bottom: 10px;
+        }
+
+        .intro p {
+            color: #9ca3af;
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: minmax(280px, 1.2fr) minmax(280px, 0.8fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .panel h2 {
+            font-size: 20px;
+            margin-bottom: 18px;
+        }
+
+        .board {
+            width: 100%;
+            aspect-ratio: 1;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            border: 4px solid #374151;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(20px, 5vw, 46px);
+        }
+
+        .light {
+            background: #e5e7eb;
+        }
+
+        .dark {
+            background: #6b8f71;
+        }
+
+        .piece {
+            color: #111827;
+            text-shadow: 0 1px 2px #ffffff;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .primary {
+            background: #34d399;
+            color: #064e3b;
+        }
+
+        .secondary {
+            background: #374151;
+            color: #f9fafb;
+        }
+
+        button:hover {
+            opacity: 0.88;
+        }
+
+        .info {
+            padding: 14px;
+            background: #111827;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            color: #d1d5db;
+            line-height: 1.7;
+        }
+
+        .recommendation {
+            padding: 14px;
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .recommendation strong {
+            color: #34d399;
+            font-size: 18px;
+        }
+
+        .recommendation p {
+            margin-top: 8px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        #message {
+            margin-top: 15px;
+            color: #fbbf24;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .muted {
+            color: #9ca3af;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 15px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        @media (max-width: 750px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 18px 5%;
+            }
+
+            main {
+                margin-top: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">ChessVision <span>AI</span></div>
+        <div class="status">● Chess engine project</div>
+    </header>
+
+    <main>
+        <section class="intro">
+            <h1>Welcome to ChessVision AI</h1>
+            <p>
+                Explore chess positions, inspect legal moves, and get
+                recommendations powered by the Stockfish chess engine.
+            </p>
+        </section>
+
+        <section class="dashboard">
+            <div class="panel">
+                <h2>Chessboard</h2>
+
+                <div class="board" id="board" aria-label="Chessboard"></div>
+
+                <div class="controls">
+    <button class="primary" id="analyzeButton">
+        Analyze Position
+    </button>
+
+    <button class="secondary" id="resetButton">
+        Reset Board
+    </button>
+</div>
+
+<div class="controls">
+    <button class="secondary" id="previousMoveButton">
+        ← Previous
+    </button>
+
+    <span id="moveCounter" class="muted">Move 0 / 0</span>
+
+    <button class="secondary" id="nextMoveButton">
+        Next →
+    </button>
+</div>
+
+<div class="controls">
+    <label for="gameIdInput">Saved game ID:</label>
+    <input
+        id="gameIdInput"
+        type="number"
+        min="1"
+        value="1"
+        style="width: 90px; padding: 8px; border-radius: 6px;"
+    >
+    <button class="primary" id="loadGameButton">
+        Load Game
+    </button>
+</div>
+
+                <p id="message" role="status">
+                    Loading the starting position...
+                </p>
+            </div>
+
+            <div class="panel">
+                <h2>Position Analysis</h2>
+
+                <div class="info">
+                    <p>Side to move: <strong id="turn">White</strong></p>
+                    <p>Game status: <strong id="gameStatus">Loading...</strong></p>
+                    <p>Legal moves: <strong id="legalCount">-</strong></p>
+                </div>
+
+                <h2>AI Recommendations</h2>
+
+                <div id="recommendations">
+                    <p class="muted">
+                        Analyze the position to get Stockfish recommendations.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        ChessVision AI · Django · Python · Stockfish
+    </footer>
+
+    <script>
+        const boardElement = document.getElementById("board");
+        let currentGameId = null;
+        let currentPly = 0;
+        let savedGame = null;
+        let currentFen = null;
+        const messageElement = document.getElementById("message");
+
+        const startingPieces = {
+            a8: "♜", b8: "♞", c8: "♝", d8: "♛",
+            e8: "♚", f8: "♝", g8: "♞", h8: "♜",
+            a7: "♟", b7: "♟", c7: "♟", d7: "♟",
+            e7: "♟", f7: "♟", g7: "♟", h7: "♟",
+            a2: "♙", b2: "♙", c2: "♙", d2: "♙",
+            e2: "♙", f2: "♙", g2: "♙", h2: "♙",
+            a1: "♖", b1: "♘", c1: "♗", d1: "♕",
+            e1: "♔", f1: "♗", g1: "♘", h1: "♖"
+        };
+
+        function renderStartingBoard() {
+            boardElement.replaceChildren();
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement("div");
+                    const file = String.fromCharCode(97 + col);
+                    const rank = 8 - row;
+                    const coordinate = file + rank;
+
+                    square.className =
+                        "square " + ((row + col) % 2 === 0 ? "light" : "dark");
+
+                    square.dataset.square = coordinate;
+
+                    const piece = startingPieces[coordinate];
+
+                    if (piece) {
+                        const pieceElement = document.createElement("span");
+                        pieceElement.className = "piece";
+                        pieceElement.textContent = piece;
+                        square.appendChild(pieceElement);
+                    }
+
+                    boardElement.appendChild(square);
+                }
+            }
+        }
+
+        async function loadSavedGame() {
+    const gameId = Number(document.getElementById("gameIdInput").value);
+    const messageElement = document.getElementById("message");
+
+    if (!Number.isInteger(gameId) || gameId < 1) {
+        messageElement.textContent = "Enter a valid saved game ID.";
+        return;
+    }
+
+    messageElement.textContent = "Loading saved game...";
+
+    try {
+        const response = await fetch(`/api/positions/games/${gameId}/`);
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Could not load the game.");
+        }
+
+        currentGameId = gameId;
+        savedGame = data.game;
+        currentPly = 0;
+
+        await showSavedGamePosition();
+
+        messageElement.textContent =
+            `Loaded game ${gameId}. Use Previous and Next to review its moves.`;
+    } catch (error) {
+        messageElement.textContent = error.message;
+    }
+}
+
+async function showSavedGamePosition() {
+    if (!savedGame || currentGameId === null) return;
+
+    const response = await fetch(
+        `/api/positions/games/${currentGameId}/position/${currentPly}/`
+    );
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || "Could not load this position.");
+    }
+
+    renderFenBoard(data.fen);
+
+    document.getElementById("turn").textContent =
+        data.turn.charAt(0).toUpperCase() + data.turn.slice(1);
+
+    document.getElementById("gameStatus").textContent = data.game_status;
+    document.getElementById("legalCount").textContent = "—";
+
+    document.getElementById("moveCounter").textContent =
+        `Ply ${currentPly} / ${savedGame.moves.length}`;
+
+    document.getElementById("previousMoveButton").disabled = currentPly === 0;
+    document.getElementById("nextMoveButton").disabled =
+        currentPly >= savedGame.moves.length;
+
+    const recommendations = document.getElementById("recommendations");
+    recommendations.replaceChildren();
+
+    if (!data.candidates || data.candidates.length === 0) {
+        recommendations.textContent = "No candidate moves available.";
+    } else {
+        data.candidates.forEach((candidate, index) => {
+            const card = document.createElement("div");
+            card.className = "recommendation";
+
+            const title = document.createElement("strong");
+            title.textContent = `${index + 1}. ${candidate.san}`;
+
+            const evaluation = document.createElement("p");
+            const score = candidate.evaluation.centipawns;
+            const mate = candidate.evaluation.mate_in;
+
+            if (mate !== null) {
+                evaluation.textContent = `Mate in ${mate}`;
+            } else if (score !== null) {
+                evaluation.textContent =
+                    `Evaluation: ${(score / 100).toFixed(2)} pawns`;
+            } else {
+                evaluation.textContent = "Evaluation unavailable";
+            }
+
+            const variation = document.createElement("p");
+            variation.textContent =
+                candidate.principal_variation || "No variation available.";
+
+            card.append(title, evaluation, variation);
+            recommendations.appendChild(card);
+        });
+    }
+}
+
+async function moveToPreviousPosition() {
+    if (currentPly <= 0) return;
+    currentPly--;
+    await showSavedGamePosition();
+}
+
+async function moveToNextPosition() {
+    if (!savedGame || currentPly >= savedGame.moves.length) return;
+    currentPly++;
+    await showSavedGamePosition();
+}
+
+        async function analyzePosition() {
+
+            function renderFenBoard(fen) {
+    const pieceSymbols = {
+        K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
+        k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
+    };
+
+    const position = fen.split(" ")[0].split("/");
+    boardElement.replaceChildren();
+
+    for (let row = 0; row < 8; row++) {
+        let col = 0;
+
+        for (const character of position[row]) {
+            if (/\d/.test(character)) {
+                col += Number(character);
+                continue;
+            }
+
+            const square = document.createElement("div");
+            square.className =
+                "square " + ((row + col) % 2 === 0 ? "light" : "dark");
+
+            const piece = document.createElement("span");
+            piece.className = "piece";
+            piece.textContent = pieceSymbols[character] || "";
+
+            square.appendChild(piece);
+            boardElement.appendChild(square);
+            col++;
+        }
+
+        // Fill any empty squares remaining on this rank.
+        while (col < 8) {
+            const square = document.createElement("div");
+            square.className =
+                "square " + ((row + col) % 2 === 0 ? "light" : "dark");
+            boardElement.appendChild(square);
+            col++;
+        }
+    }
+
+    currentFen = fen;
+}
+            const button = document.getElementById("analyzeButton");
+            button.disabled = true;
+            messageElement.textContent = "Analyzing position...";
+
+            try {
+                const response = await fetch("/api/positions/analyze/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || "Position analysis failed.");
+                }
+
+                document.getElementById("turn").textContent = data.turn;
+                document.getElementById("gameStatus").textContent =
+                    data.game_status;
+                document.getElementById("legalCount").textContent =
+                    data.legal_move_count;
+
+                messageElement.textContent =
+                    "Position analyzed successfully.";
+
+                const predictionResponse = await fetch("/api/positions/predict/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ fen: data.fen })
+                });
+
+                const prediction = await predictionResponse.json();
+
+                if (!predictionResponse.ok || !prediction.success) {
+                    throw new Error(
+                        prediction.message || "Stockfish analysis failed."
+                    );
+                }
+
+                const recommendations =
+                    document.getElementById("recommendations");
+
+                recommendations.replaceChildren();
+
+                if (prediction.candidates.length === 0) {
+                    recommendations.textContent =
+                        "No candidate moves are available.";
+                    return;
+                }
+
+                prediction.candidates.forEach((candidate, index) => {
+                    const card = document.createElement("div");
+                    card.className = "recommendation";
+
+                    const title = document.createElement("strong");
+                    title.textContent =
+                        `${index + 1}. ${candidate.san}`;
+
+                    const evaluation = document.createElement("p");
+
+                    const score = candidate.evaluation.centipawns;
+                    const mate = candidate.evaluation.mate_in;
+
+                    if (mate !== null) {
+                        evaluation.textContent = `Mate in ${mate}`;
+                    } else if (score !== null) {
+                        evaluation.textContent =
+                            `Evaluation: ${(score / 100).toFixed(2)} pawns`;
+                    } else {
+                        evaluation.textContent = "Evaluation unavailable";
+                    }
+
+                    const line = document.createElement("p");
+                    line.textContent =
+                        candidate.principal_variation || "No line available.";
+
+                    card.append(title, evaluation, line);
+                    recommendations.appendChild(card);
+                });
+
+                messageElement.textContent =
+                    "Position analyzed successfully using Stockfish.";
+
+            } catch (error) {
+                messageElement.textContent = error.message;
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        document.getElementById("analyzeButton").addEventListener(
+            "click",
+            analyzePosition
+        );
+
+        document.getElementById("resetButton").addEventListener("click", () => {
+            renderStartingBoard();
+
+            document.getElementById("turn").textContent = "White";
+            document.getElementById("gameStatus").textContent = "Active";
+            document.getElementById("legalCount").textContent = "-";
+
+            document.getElementById("recommendations").textContent =
+                "Click Analyze Position to get recommendations.";
+
+            messageElement.textContent = "Board reset to the starting position.";
+        });
+
+
+        document.getElementById("loadGameButton").addEventListener(
+        "click",
+        loadSavedGame
+        );
+
+        document.getElementById("previousMoveButton").addEventListener(
+        "click",
+        moveToPreviousPosition
+        );
+
+        document.getElementById("nextMoveButton").addEventListener(
+        "click",
+        moveToNextPosition
+        );
+
+        renderStartingBoard();
+    </script>
+</body>
+</html>
+
