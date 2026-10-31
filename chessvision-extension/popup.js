@@ -1,4 +1,3 @@
-cat > popup.js <<'EOF'
 const BASE_URL = "http://127.0.0.1:8001";
 const API_URL = `${BASE_URL}/api/positions/predict/`;
 
@@ -189,4 +188,3 @@ async function loadSavedGame() {
 }
 
 checkServer();
-EOF
