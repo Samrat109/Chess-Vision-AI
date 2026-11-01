@@ -238,4 +238,116 @@ For production, update this to your deployed HTTPS domain.
 
 ## 📱 Progressive Web App (PWA)
 
-ChessVision AI includes P
+ChessVision AI includes PWA components to support an installable web experience.
+
+Current PWA components:
+
+Web app manifest.
+
+Application icons (192×192 and 512×512).
+
+Service worker.
+
+Standalone display configuration.
+
+For installation on supported devices, deploy the application over HTTPS.
+
+☁️ Deployment
+
+The planned production architecture uses:
+
+                 Users
+                   |
+                   v
+              HTTPS / DNS
+                   |
+                   v
+                AWS EC2
+                   |
+                   v
+                 Nginx
+                   |
+                   v
+                Gunicorn
+                   |
+                   v
+              Django Backend
+                   |
+             +-----+-----+
+             |           |
+             v           v
+          Stockfish    Database
+
+Planned deployment technologies:
+
+AWS EC2
+
+Ubuntu Server
+
+Nginx
+
+Gunicorn
+
+Stockfish
+
+HTTPS / SSL
+
+PostgreSQL for future database scaling
+
+🔒 Security
+
+Keep Django's production secret key outside the source code.
+
+Set DEBUG=False in production.
+
+Configure ALLOWED_HOSTS correctly.
+
+Use HTTPS for production.
+
+Never commit .env, private keys, or credentials.
+
+Restrict SSH access to trusted IP addresses.
+
+Do not expose the Django development server publicly.
+
+🧪 Testing
+
+Run Django system checks:
+
+python manage.py check
+
+Run automated tests:
+
+python manage.py test
+
+🗺️ Future Improvements
+
+Interactive chessboard with move navigation.
+
+Complete PGN import and game review.
+
+Improved chess position visualization.
+
+Opening and endgame analysis.
+
+User authentication and game history.
+
+Analysis reports and downloadable PGN files.
+
+Responsive mobile-first dashboard.
+
+Cloud deployment and production monitoring.
+
+PostgreSQL database integration.
+
+Improved PWA offline experience.
+
+🎯 Project Goal
+
+The goal of ChessVision AI is to build an accessible chess analysis platform that helps players study positions, review completed games, and improve their understanding of chess through engine-powered analysis.
+
+👨‍💻 Author
+
+Samrat Gaikwad
+
+GitHub: Samrat109
