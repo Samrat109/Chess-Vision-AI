@@ -2,26 +2,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link
-    rel="manifest"
-    href="{% static 'games/manifest.webmanifest' %}"
-    >
-
-    <meta name="theme-color" content="#10b981">
-
-    <link
-    rel="apple-touch-icon"
-    href="{% static 'games/icons/icon19.png' %}"
-    >
-
-    <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-    >
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111827">
 
     <title>ChessVision AI</title>
+
+    <link rel="manifest" href="{% static 'games/manifest.webmanifest' %}">
+    <link rel="apple-touch-icon" href="{% static 'games/icons/icon192.png' %}">
 
     <style>
         * {
@@ -31,23 +19,24 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: rgba(0, 0, 0, 0.5);
+            font-family: Inter, Arial, sans-serif;
+            background: #0b1120;
             color: #f9fafb;
             min-height: 100vh;
         }
 
         header {
-            padding: 22px 7%;
+            padding: 20px 7%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #374151;
+            border-bottom: 1px solid #273449;
+            background: #111827;
         }
 
         .logo {
             font-size: 25px;
-            font-weight: bold;
+            font-weight: 800;
         }
 
         .logo span {
@@ -56,16 +45,16 @@
 
         .status {
             color: #34d399;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         main {
-            width: min(1200px, 92%);
-            margin: 40px auto;
+            width: min(1250px, 94%);
+            margin: 35px auto;
         }
 
         .intro {
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
         .intro h1 {
@@ -80,21 +69,22 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: minmax(280px, 1.2fr) minmax(280px, 0.8fr);
+            grid-template-columns: minmax(300px, 1.1fr) minmax(280px, .9fr);
             gap: 24px;
             align-items: start;
         }
 
         .panel {
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 14px;
+            background: #172033;
+            border: 1px solid #334155;
+            border-radius: 16px;
             padding: 22px;
+            min-width: 0;
         }
 
         .panel h2 {
-            font-size: 20px;
-            margin-bottom: 18px;
+            font-size: 19px;
+            margin-bottom: 16px;
         }
 
         .board {
@@ -102,8 +92,8 @@
             aspect-ratio: 1;
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            border: 4px solid #374151;
-            border-radius: 4px;
+            border: 4px solid #475569;
+            border-radius: 5px;
             overflow: hidden;
         }
 
@@ -111,7 +101,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: clamp(20px, 5vw, 46px);
+            min-width: 0;
+            aspect-ratio: 1;
+            position: relative;
+            font-size: clamp(22px, 5vw, 48px);
         }
 
         .light {
@@ -124,23 +117,37 @@
 
         .piece {
             color: #111827;
-            text-shadow: 0 1px 2px #ffffff;
+            text-shadow: 0 1px 2px #fff;
+            user-select: none;
         }
 
         .controls {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             gap: 10px;
-            margin-top: 18px;
+            margin-top: 16px;
         }
 
         button {
             border: none;
             border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 14px;
-            font-weight: bold;
+            padding: 11px 15px;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
+            transition: .2s;
+        }
+
+        button:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .primary {
@@ -149,28 +156,62 @@
         }
 
         .secondary {
-            background: #374151;
+            background: #334155;
             color: #f9fafb;
         }
 
-        button:hover {
-            opacity: 0.88;
+        .danger {
+            background: #7f1d1d;
+            color: #fee2e2;
+        }
+
+        input, textarea {
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: #f9fafb;
+            border-radius: 8px;
+            padding: 10px;
+            max-width: 100%;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+
+        input:focus, textarea:focus {
+            outline: 2px solid #34d399;
+            border-color: transparent;
+        }
+
+        .upload-section {
+            background: #111827;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 17px;
+            margin-top: 20px;
+        }
+
+        .upload-section h2 {
+            margin-bottom: 8px;
         }
 
         .info {
-            padding: 14px;
-            background: #111827;
-            border-radius: 8px;
-            margin-bottom: 18px;
+            padding: 15px;
+            background: #0f172a;
+            border-radius: 9px;
+            margin-bottom: 20px;
             color: #d1d5db;
-            line-height: 1.7;
+            line-height: 1.9;
+            font-size: 14px;
         }
 
         .recommendation {
-            padding: 14px;
-            background: #111827;
-            border: 1px solid #374151;
-            border-radius: 8px;
+            padding: 15px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 9px;
             margin-bottom: 12px;
         }
 
@@ -181,31 +222,56 @@
 
         .recommendation p {
             margin-top: 8px;
-            color: #9ca3af;
+            color: #cbd5e1;
             font-size: 13px;
-        }
-
-        #message {
-            margin-top: 15px;
-            color: #fbbf24;
             line-height: 1.5;
-            overflow-wrap: anywhere;
         }
 
         .muted {
             color: #9ca3af;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.6;
+        }
+
+        #message, #detectionMessage {
+            margin-top: 14px;
+            color: #fbbf24;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        #detectedFenContainer {
+            margin-top: 14px;
+        }
+
+        #detectedFen {
+            width: 100%;
+            resize: vertical;
+            margin-top: 8px;
+            font-family: monospace;
+        }
+
+        .section-divider {
+            border: 0;
+            border-top: 1px solid #334155;
+            margin: 20px 0;
+        }
+
+        .preview-label {
+            color: #34d399;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
         footer {
             text-align: center;
             padding: 30px 15px;
-            color: #9ca3af;
+            color: #64748b;
             font-size: 13px;
         }
 
-        @media (max-width: 750px) {
+        @media(max-width: 800px) {
             .dashboard {
                 grid-template-columns: 1fr;
             }
@@ -222,157 +288,703 @@
 </head>
 
 <body>
-    <header>
-        <div class="logo">ChessVision <span>AI</span></div>
-        <div class="status">● Chess engine project</div>
-    </header>
 
-    <main>
-        <section class="intro">
-            <h1>Welcome to ChessVision AI</h1>
-            <p>
-                Explore chess positions, inspect legal moves, and get
-                recommendations powered by the Stockfish chess engine.
-            </p>
-        </section>
+<header>
+    <div class="logo">ChessVision <span>AI</span></div>
+    <div class="status">● Chess engine project</div>
+</header>
 
-        <section class="dashboard">
-            <div class="panel">
-                <h2>Chessboard</h2>
+<main>
 
-                <div class="board" id="board" aria-label="Chessboard"></div>
+    <section class="intro">
+        <h1>Welcome to ChessVision AI</h1>
+        <p>
+            Analyze chess positions, review saved games, detect positions
+            from screenshots, and explore Stockfish recommendations.
+        </p>
+    </section>
+
+    <section class="dashboard">
+
+        <!-- CHESSBOARD PANEL -->
+        <div class="panel">
+
+            <h2>Chessboard</h2>
+
+            <div id="board" class="board" aria-label="Chessboard"></div>
+
+            <div class="controls">
+                <button class="primary" id="analyzeButton">
+                    Analyze Position
+                </button>
+
+                <button class="secondary" id="resetButton">
+                    Reset Board
+                </button>
+            </div>
+
+            <!-- SCREENSHOT DETECTION -->
+            <div class="upload-section">
+
+                <h2>Screenshot Position Detection</h2>
+
+                <p class="muted">
+                    Upload a chessboard screenshot to reconstruct
+                    its position.
+                </p>
+
+                <input
+                    type="file"
+                    id="chessScreenshot"
+                    accept="image/png,image/jpeg,image/webp"
+                >
 
                 <div class="controls">
-    <button class="primary" id="analyzeButton">
-        Analyze Position
-    </button>
+                    <button class="primary" id="detectButton">
+                        Detect Position
+                    </button>
 
-    <button class="secondary" id="resetButton">
-        Reset Board
-    </button>
-</div>
+                    <button
+                        class="secondary"
+                        id="confirmPositionButton"
+                        disabled
+                    >
+                        Confirm & Analyze
+                    </button>
+                </div>
 
-<div class="controls">
-    <button class="secondary" id="previousMoveButton">
-        ← Previous
-    </button>
+                <p id="detectionMessage" role="status">
+                    Waiting for screenshot.
+                </p>
 
-    <span id="moveCounter" class="muted">Move 0 / 0</span>
+                <div id="detectedFenContainer" hidden>
 
-    <button class="secondary" id="nextMoveButton">
-        Next →
-    </button>
-</div>
+                    <hr class="section-divider">
 
-<div class="controls">
-    <label for="gameIdInput">Saved game ID:</label>
-    <input
-        id="gameIdInput"
-        type="number"
-        min="1"
-        value="1"
-        style="width: 90px; padding: 8px; border-radius: 6px;"
-    >
-    <button class="primary" id="loadGameButton">
-        Load Game
-    </button>
-</div>
+                    <p class="preview-label">
+                        DETECTED POSITION PREVIEW
+                    </p>
 
-                <p id="message" role="status">
-                    Loading the starting position...
+                    <label for="detectedFen">
+                        Detected FEN (editable):
+                    </label>
+
+                    <textarea
+                        id="detectedFen"
+                        rows="3"
+                        spellcheck="false"
+                        placeholder="Detected FEN will appear here."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+            <!-- SAVED GAME NAVIGATION -->
+            <hr class="section-divider">
+
+            <h2>Game Navigation</h2>
+
+            <div class="controls">
+
+                <button
+                    class="secondary"
+                    id="previousMoveButton"
+                    disabled
+                >
+                    ← Previous
+                </button>
+
+                <span id="moveCounter" class="muted">
+                    Ply 0 / 0
+                </span>
+
+                <button
+                    class="secondary"
+                    id="nextMoveButton"
+                    disabled
+                >
+                    Next →
+                </button>
+
+            </div>
+
+            <div class="controls">
+
+                <label for="gameIdInput" class="muted">
+                    Saved game ID:
+                </label>
+
+                <input
+                    id="gameIdInput"
+                    type="number"
+                    min="1"
+                    value="1"
+                    style="width:90px"
+                >
+
+                <button class="primary" id="loadGameButton">
+                    Load Game
+                </button>
+
+            </div>
+
+            <p id="message" role="status">
+                Loading starting position...
+            </p>
+
+        </div>
+
+        <!-- ANALYSIS PANEL -->
+        <div class="panel">
+
+            <h2>Position Analysis</h2>
+
+            <div class="info">
+
+                <p>
+                    Side to move:
+                    <strong id="turn">White</strong>
+                </p>
+
+                <p>
+                    Game status:
+                    <strong id="gameStatus">Loading...</strong>
+                </p>
+
+                <p>
+                    Legal moves:
+                    <strong id="legalCount">-</strong>
+                </p>
+
+            </div>
+
+            <h2>Stockfish AI Recommendations</h2>
+
+            <div id="recommendations">
+                <p class="muted">
+                    Analyze a position to see Stockfish recommendations.
                 </p>
             </div>
 
-            <div class="panel">
-                <h2>Position Analysis</h2>
+        </div>
 
-                <div class="info">
-                    <p>Side to move: <strong id="turn">White</strong></p>
-                    <p>Game status: <strong id="gameStatus">Loading...</strong></p>
-                    <p>Legal moves: <strong id="legalCount">-</strong></p>
-                </div>
+    </section>
 
-                <h2>AI Recommendations</h2>
+</main>
 
-                <div id="recommendations">
-                    <p class="muted">
-                        Analyze the position to get Stockfish recommendations.
-                    </p>
-                </div>
-            </div>
-        </section>
-    </main>
+<footer>
+    ChessVision AI · Django · Python · PostgreSQL · Stockfish
+</footer>
 
-    <footer>
-        ChessVision AI · Django · Python · Stockfish
-    </footer>
+<script>
+"use strict";
 
-    <script>
-        const boardElement = document.getElementById("board");
-        let currentGameId = null;
-        let currentPly = 0;
-        let savedGame = null;
-        let currentFen = null;
-        const messageElement = document.getElementById("message");
+/* =========================================
+   GLOBAL APPLICATION STATE
+========================================= */
 
-        const startingPieces = {
-            a8: "♜", b8: "♞", c8: "♝", d8: "♛",
-            e8: "♚", f8: "♝", g8: "♞", h8: "♜",
-            a7: "♟", b7: "♟", c7: "♟", d7: "♟",
-            e7: "♟", f7: "♟", g7: "♟", h7: "♟",
-            a2: "♙", b2: "♙", c2: "♙", d2: "♙",
-            e2: "♙", f2: "♙", g2: "♙", h2: "♙",
-            a1: "♖", b1: "♘", c1: "♗", d1: "♕",
-            e1: "♔", f1: "♗", g1: "♘", h1: "♖"
-        };
+const boardElement = document.getElementById("board");
+const messageElement = document.getElementById("message");
 
-        function renderStartingBoard() {
-            boardElement.replaceChildren();
+let currentGameId = null;
+let currentPly = 0;
+let savedGame = null;
+let currentFen = null;
+let detectedFen = null;
 
-            for (let row = 0; row < 8; row++) {
-                for (let col = 0; col < 8; col++) {
-                    const square = document.createElement("div");
-                    const file = String.fromCharCode(97 + col);
-                    const rank = 8 - row;
-                    const coordinate = file + rank;
+const pieceSymbols = {
+    K: "♔", Q: "♕", R: "♖",
+    B: "♗", N: "♘", P: "♙",
+    k: "♚", q: "♛", r: "♜",
+    b: "♝", n: "♞", p: "♟"
+};
 
-                    square.className =
-                        "square " + ((row + col) % 2 === 0 ? "light" : "dark");
+const startingPieces = {
+    a8: "♜", b8: "♞", c8: "♝", d8: "♛",
+    e8: "♚", f8: "♝", g8: "♞", h8: "♜",
 
-                    square.dataset.square = coordinate;
+    a7: "♟", b7: "♟", c7: "♟", d7: "♟",
+    e7: "♟", f7: "♟", g7: "♟", h7: "♟",
 
-                    const piece = startingPieces[coordinate];
+    a2: "♙", b2: "♙", c2: "♙", d2: "♙",
+    e2: "♙", f2: "♙", g2: "♙", h2: "♙",
 
-                    if (piece) {
-                        const pieceElement = document.createElement("span");
-                        pieceElement.className = "piece";
-                        pieceElement.textContent = piece;
-                        square.appendChild(pieceElement);
-                    }
+    a1: "♖", b1: "♘", c1: "♗", d1: "♕",
+    e1: "♔", f1: "♗", g1: "♘", h1: "♖"
+};
 
-                    boardElement.appendChild(square);
+
+/* =========================================
+   API HELPER
+========================================= */
+
+async function apiRequest(url, options = {}) {
+
+    const response = await fetch(url, options);
+
+    let data;
+
+    try {
+        data = await response.json();
+    } catch {
+        throw new Error("The server returned an invalid response.");
+    }
+
+    if (!response.ok || data.success === false) {
+        throw new Error(data.message || `Request failed (${response.status}).`);
+    }
+
+    return data;
+}
+
+
+/* =========================================
+   CHESSBOARD RENDERING
+========================================= */
+
+function createSquare(row, col, piece = null) {
+
+    const square = document.createElement("div");
+
+    square.className =
+        "square " +
+        ((row + col) % 2 === 0 ? "light" : "dark");
+
+    square.dataset.square =
+        String.fromCharCode(97 + col) + (8 - row);
+
+    if (piece) {
+
+        const pieceElement = document.createElement("span");
+
+        pieceElement.className = "piece";
+        pieceElement.textContent = piece;
+
+        square.appendChild(pieceElement);
+    }
+
+    return square;
+}
+
+
+function renderStartingBoard() {
+
+    const fragment = document.createDocumentFragment();
+
+    for (let row = 0; row < 8; row++) {
+
+        for (let col = 0; col < 8; col++) {
+
+            const coordinate =
+                String.fromCharCode(97 + col) + (8 - row);
+
+            fragment.appendChild(
+                createSquare(row, col, startingPieces[coordinate])
+            );
+        }
+    }
+
+    boardElement.replaceChildren(fragment);
+
+    currentFen = null;
+}
+
+
+/*
+ * IMPORTANT:
+ * This function is global.
+ * Saved games, screenshot previews and analysis
+ * can all call it.
+ */
+
+function renderFenBoard(fen) {
+
+    const parts = fen.trim().split(/\s+/);
+    const ranks = parts[0].split("/");
+
+    if (ranks.length !== 8) {
+        throw new Error("Invalid FEN: expected eight ranks.");
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    for (let row = 0; row < 8; row++) {
+
+        let col = 0;
+
+        for (const character of ranks[row]) {
+
+            if (/[1-8]/.test(character)) {
+
+                const emptyCount = Number(character);
+
+                if (col + emptyCount > 8) {
+                    throw new Error("Invalid FEN rank.");
                 }
+
+                for (let i = 0; i < emptyCount; i++) {
+
+                    fragment.appendChild(
+                        createSquare(row, col)
+                    );
+
+                    col++;
+                }
+
+            } else {
+
+                if (!pieceSymbols[character] || col >= 8) {
+                    throw new Error("Invalid FEN piece placement.");
+                }
+
+                fragment.appendChild(
+                    createSquare(row, col, pieceSymbols[character])
+                );
+
+                col++;
             }
         }
 
-        async function loadSavedGame() {
-    const gameId = Number(document.getElementById("gameIdInput").value);
-    const messageElement = document.getElementById("message");
+        if (col !== 8) {
+            throw new Error("Invalid FEN: each rank must contain eight squares.");
+        }
+    }
 
-    if (!Number.isInteger(gameId) || gameId < 1) {
-        messageElement.textContent = "Enter a valid saved game ID.";
+    boardElement.replaceChildren(fragment);
+    currentFen = fen;
+}
+
+
+/* =========================================
+   STOCKFISH RECOMMENDATIONS
+========================================= */
+
+function displayRecommendations(candidates) {
+
+    const container =
+        document.getElementById("recommendations");
+
+    container.replaceChildren();
+
+    if (!candidates || candidates.length === 0) {
+
+        container.textContent =
+            "No candidate moves available.";
+
         return;
     }
 
-    messageElement.textContent = "Loading saved game...";
+    candidates.forEach((candidate, index) => {
+
+        const card = document.createElement("div");
+        card.className = "recommendation";
+
+        const title = document.createElement("strong");
+
+        title.textContent =
+            `${index + 1}. ${candidate.san}`;
+
+        const evaluation = document.createElement("p");
+
+        const score = candidate.evaluation?.centipawns;
+        const mate = candidate.evaluation?.mate_in;
+
+        if (mate !== null && mate !== undefined) {
+
+            evaluation.textContent = `Mate in ${mate}`;
+
+        } else if (score !== null && score !== undefined) {
+
+            evaluation.textContent =
+                `Evaluation: ${(score / 100).toFixed(2)} pawns`;
+
+        } else {
+
+            evaluation.textContent = "Evaluation unavailable";
+        }
+
+        const variation = document.createElement("p");
+
+        variation.textContent =
+            candidate.principal_variation || "No variation available.";
+
+        card.append(title, evaluation, variation);
+
+        container.appendChild(card);
+    });
+}
+
+
+/* =========================================
+   UPDATE POSITION INFORMATION
+========================================= */
+
+function updatePositionInfo(data) {
+
+    if (data.turn) {
+        document.getElementById("turn").textContent =
+            data.turn.charAt(0).toUpperCase() + data.turn.slice(1);
+    }
+
+    if (data.game_status) {
+        document.getElementById("gameStatus").textContent =
+            data.game_status;
+    }
+
+    if (data.legal_move_count !== undefined) {
+        document.getElementById("legalCount").textContent =
+            data.legal_move_count;
+    }
+}
+
+
+/* =========================================
+   ANALYZE CURRENT POSITION
+========================================= */
+
+async function analyzePosition() {
+
+    const button = document.getElementById("analyzeButton");
+
+    button.disabled = true;
+
+    messageElement.textContent = "Analyzing position...";
 
     try {
-        const response = await fetch(`/api/positions/games/${gameId}/`);
-        const data = await response.json();
 
-        if (!response.ok || !data.success) {
-            throw new Error(data.message || "Could not load the game.");
+        let fen = currentFen;
+
+        if (!fen) {
+
+            const positionData = await apiRequest(
+                "/api/positions/analyze/",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({})
+                }
+            );
+
+            fen = positionData.fen;
+
+            updatePositionInfo(positionData);
+
+            renderFenBoard(fen);
         }
+
+        const prediction = await apiRequest(
+            "/api/positions/predict/",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ fen })
+            }
+        );
+
+        displayRecommendations(prediction.candidates);
+
+        messageElement.textContent =
+            "Position analyzed successfully using Stockfish.";
+
+    } catch (error) {
+
+        messageElement.textContent = error.message;
+
+    } finally {
+
+        button.disabled = false;
+    }
+}
+
+
+/* =========================================
+   SCREENSHOT DETECTION
+========================================= */
+
+const screenshotInput =
+    document.getElementById("chessScreenshot");
+
+const detectButton =
+    document.getElementById("detectButton");
+
+const confirmButton =
+    document.getElementById("confirmPositionButton");
+
+
+detectButton.addEventListener("click", async () => {
+
+    const file = screenshotInput.files[0];
+
+    const output =
+        document.getElementById("detectionMessage");
+
+    if (!file) {
+
+        output.textContent =
+            "Please select a chessboard screenshot.";
+
+        return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+
+        output.textContent =
+            "Please select a valid image.";
+
+        return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+
+        output.textContent =
+            "Image must be smaller than 10 MB.";
+
+        return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+    detectButton.disabled = true;
+    confirmButton.disabled = true;
+
+    output.textContent =
+        "Uploading image and detecting chess position...";
+
+    try {
+
+        const data = await apiRequest(
+            "/api/positions/detect-image/",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        if (!data.fen) {
+            throw new Error("Detection did not return a FEN.");
+        }
+
+        detectedFen = data.fen;
+
+        renderFenBoard(detectedFen);
+
+        document.getElementById(
+            "detectedFenContainer"
+        ).hidden = false;
+
+        document.getElementById(
+            "detectedFen"
+        ).value = detectedFen;
+
+        confirmButton.disabled = false;
+
+        output.textContent =
+            "Position detected. Review the board and FEN before analysis.";
+
+    } catch (error) {
+
+        output.textContent = error.message;
+
+    } finally {
+
+        detectButton.disabled = false;
+    }
+});
+
+
+/* =========================================
+   CONFIRM POSITION AND ANALYZE
+========================================= */
+
+confirmButton.addEventListener("click", async () => {
+
+    const output =
+        document.getElementById("detectionMessage");
+
+    const fen =
+        document.getElementById("detectedFen").value.trim();
+
+    if (!fen) {
+
+        output.textContent = "Enter a FEN first.";
+
+        return;
+    }
+
+    confirmButton.disabled = true;
+
+    output.textContent = "Validating and analyzing position...";
+
+    try {
+
+        /*
+         * The backend validates the full FEN and checks
+         * chess legality before returning recommendations.
+         */
+
+        const prediction = await apiRequest(
+            "/api/positions/predict/",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ fen })
+            }
+        );
+
+        renderFenBoard(fen);
+
+        currentFen = fen;
+
+        displayRecommendations(prediction.candidates);
+
+        output.textContent =
+            "Confirmed position analyzed successfully.";
+
+    } catch (error) {
+
+        output.textContent = error.message;
+
+    } finally {
+
+        confirmButton.disabled = false;
+    }
+});
+
+
+/* =========================================
+   LOAD SAVED GAME
+========================================= */
+
+async function loadSavedGame() {
+
+    const gameId =
+        Number(document.getElementById("gameIdInput").value);
+
+    if (!Number.isInteger(gameId) || gameId < 1) {
+
+        messageElement.textContent =
+            "Enter a valid saved game ID.";
+
+        return;
+    }
+
+    messageElement.textContent =
+        "Loading saved game...";
+
+    try {
+
+        const data = await apiRequest(
+            `/api/positions/games/${gameId}/`
+        );
 
         currentGameId = gameId;
         savedGame = data.game;
@@ -381,263 +993,167 @@
         await showSavedGamePosition();
 
         messageElement.textContent =
-            `Loaded game ${gameId}. Use Previous and Next to review its moves.`;
+            `Loaded game ${gameId}.`;
+
     } catch (error) {
+
         messageElement.textContent = error.message;
     }
 }
 
-async function showSavedGamePosition() {
-    if (!savedGame || currentGameId === null) return;
 
-    const response = await fetch(
+/* =========================================
+   DISPLAY SAVED GAME POSITION
+========================================= */
+
+async function showSavedGamePosition() {
+
+    if (!savedGame || currentGameId === null) {
+        return;
+    }
+
+    const data = await apiRequest(
         `/api/positions/games/${currentGameId}/position/${currentPly}/`
     );
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-        throw new Error(data.message || "Could not load this position.");
-    }
 
     renderFenBoard(data.fen);
 
-    document.getElementById("turn").textContent =
-        data.turn.charAt(0).toUpperCase() + data.turn.slice(1);
-
-    document.getElementById("gameStatus").textContent = data.game_status;
-    document.getElementById("legalCount").textContent = "—";
+    updatePositionInfo(data);
 
     document.getElementById("moveCounter").textContent =
         `Ply ${currentPly} / ${savedGame.moves.length}`;
 
-    document.getElementById("previousMoveButton").disabled = currentPly === 0;
+    document.getElementById("previousMoveButton").disabled =
+        currentPly === 0;
+
     document.getElementById("nextMoveButton").disabled =
         currentPly >= savedGame.moves.length;
 
-    const recommendations = document.getElementById("recommendations");
-    recommendations.replaceChildren();
-
-    if (!data.candidates || data.candidates.length === 0) {
-        recommendations.textContent = "No candidate moves available.";
-    } else {
-        data.candidates.forEach((candidate, index) => {
-            const card = document.createElement("div");
-            card.className = "recommendation";
-
-            const title = document.createElement("strong");
-            title.textContent = `${index + 1}. ${candidate.san}`;
-
-            const evaluation = document.createElement("p");
-            const score = candidate.evaluation.centipawns;
-            const mate = candidate.evaluation.mate_in;
-
-            if (mate !== null) {
-                evaluation.textContent = `Mate in ${mate}`;
-            } else if (score !== null) {
-                evaluation.textContent =
-                    `Evaluation: ${(score / 100).toFixed(2)} pawns`;
-            } else {
-                evaluation.textContent = "Evaluation unavailable";
-            }
-
-            const variation = document.createElement("p");
-            variation.textContent =
-                candidate.principal_variation || "No variation available.";
-
-            card.append(title, evaluation, variation);
-            recommendations.appendChild(card);
-        });
-    }
+    displayRecommendations(data.candidates);
 }
+
+
+/* =========================================
+   PREVIOUS AND NEXT MOVES
+========================================= */
 
 async function moveToPreviousPosition() {
-    if (currentPly <= 0) return;
-    currentPly--;
-    await showSavedGamePosition();
-}
 
-async function moveToNextPosition() {
-    if (!savedGame || currentPly >= savedGame.moves.length) return;
-    currentPly++;
-    await showSavedGamePosition();
-}
-
-        async function analyzePosition() {
-
-            function renderFenBoard(fen) {
-    const pieceSymbols = {
-        K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
-        k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
-    };
-
-    const position = fen.split(" ")[0].split("/");
-    boardElement.replaceChildren();
-
-    for (let row = 0; row < 8; row++) {
-        let col = 0;
-
-        for (const character of position[row]) {
-            if (/\d/.test(character)) {
-                col += Number(character);
-                continue;
-            }
-
-            const square = document.createElement("div");
-            square.className =
-                "square " + ((row + col) % 2 === 0 ? "light" : "dark");
-
-            const piece = document.createElement("span");
-            piece.className = "piece";
-            piece.textContent = pieceSymbols[character] || "";
-
-            square.appendChild(piece);
-            boardElement.appendChild(square);
-            col++;
-        }
-
-        // Fill any empty squares remaining on this rank.
-        while (col < 8) {
-            const square = document.createElement("div");
-            square.className =
-                "square " + ((row + col) % 2 === 0 ? "light" : "dark");
-            boardElement.appendChild(square);
-            col++;
-        }
+    if (currentPly <= 0) {
+        return;
     }
 
-    currentFen = fen;
+    currentPly--;
+
+    try {
+
+        await showSavedGamePosition();
+
+    } catch (error) {
+
+        messageElement.textContent = error.message;
+    }
 }
-            const button = document.getElementById("analyzeButton");
-            button.disabled = true;
-            messageElement.textContent = "Analyzing position...";
-
-            try {
-                const response = await fetch("/api/positions/analyze/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({})
-                });
-
-                const data = await response.json();
-
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || "Position analysis failed.");
-                }
-
-                document.getElementById("turn").textContent = data.turn;
-                document.getElementById("gameStatus").textContent =
-                    data.game_status;
-                document.getElementById("legalCount").textContent =
-                    data.legal_move_count;
-
-                messageElement.textContent =
-                    "Position analyzed successfully.";
-
-                const predictionResponse = await fetch("/api/positions/predict/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ fen: data.fen })
-                });
-
-                const prediction = await predictionResponse.json();
-
-                if (!predictionResponse.ok || !prediction.success) {
-                    throw new Error(
-                        prediction.message || "Stockfish analysis failed."
-                    );
-                }
-
-                const recommendations =
-                    document.getElementById("recommendations");
-
-                recommendations.replaceChildren();
-
-                if (prediction.candidates.length === 0) {
-                    recommendations.textContent =
-                        "No candidate moves are available.";
-                    return;
-                }
-
-                prediction.candidates.forEach((candidate, index) => {
-                    const card = document.createElement("div");
-                    card.className = "recommendation";
-
-                    const title = document.createElement("strong");
-                    title.textContent =
-                        `${index + 1}. ${candidate.san}`;
-
-                    const evaluation = document.createElement("p");
-
-                    const score = candidate.evaluation.centipawns;
-                    const mate = candidate.evaluation.mate_in;
-
-                    if (mate !== null) {
-                        evaluation.textContent = `Mate in ${mate}`;
-                    } else if (score !== null) {
-                        evaluation.textContent =
-                            `Evaluation: ${(score / 100).toFixed(2)} pawns`;
-                    } else {
-                        evaluation.textContent = "Evaluation unavailable";
-                    }
-
-                    const line = document.createElement("p");
-                    line.textContent =
-                        candidate.principal_variation || "No line available.";
-
-                    card.append(title, evaluation, line);
-                    recommendations.appendChild(card);
-                });
-
-                messageElement.textContent =
-                    "Position analyzed successfully using Stockfish.";
-
-            } catch (error) {
-                messageElement.textContent = error.message;
-            } finally {
-                button.disabled = false;
-            }
-        }
-
-        document.getElementById("analyzeButton").addEventListener(
-            "click",
-            analyzePosition
-        );
-
-        document.getElementById("resetButton").addEventListener("click", () => {
-            renderStartingBoard();
-
-            document.getElementById("turn").textContent = "White";
-            document.getElementById("gameStatus").textContent = "Active";
-            document.getElementById("legalCount").textContent = "-";
-
-            document.getElementById("recommendations").textContent =
-                "Click Analyze Position to get recommendations.";
-
-            messageElement.textContent = "Board reset to the starting position.";
-        });
 
 
-        document.getElementById("loadGameButton").addEventListener(
-        "click",
-        loadSavedGame
-        );
+async function moveToNextPosition() {
 
-        document.getElementById("previousMoveButton").addEventListener(
-        "click",
-        moveToPreviousPosition
-        );
+    if (!savedGame || currentPly >= savedGame.moves.length) {
+        return;
+    }
 
-        document.getElementById("nextMoveButton").addEventListener(
-        "click",
-        moveToNextPosition
-        );
+    currentPly++;
 
-        renderStartingBoard();
-    </script>
+    try {
+
+        await showSavedGamePosition();
+
+    } catch (error) {
+
+        messageElement.textContent = error.message;
+    }
+}
+
+
+/* =========================================
+   RESET BOARD
+========================================= */
+
+function resetBoard() {
+
+    currentGameId = null;
+    currentPly = 0;
+    savedGame = null;
+    currentFen = null;
+    detectedFen = null;
+
+    renderStartingBoard();
+
+    document.getElementById("turn").textContent = "White";
+    document.getElementById("gameStatus").textContent = "Active";
+    document.getElementById("legalCount").textContent = "-";
+
+    document.getElementById("moveCounter").textContent = "Ply 0 / 0";
+
+    document.getElementById("previousMoveButton").disabled = true;
+    document.getElementById("nextMoveButton").disabled = true;
+
+    document.getElementById("recommendations").textContent =
+        "Analyze a position to get Stockfish recommendations.";
+
+    document.getElementById("detectedFenContainer").hidden = true;
+
+    document.getElementById("detectedFen").value = "";
+
+    document.getElementById("chessScreenshot").value = "";
+
+    document.getElementById("confirmPositionButton").disabled = true;
+
+    document.getElementById("detectionMessage").textContent =
+        "Waiting for screenshot.";
+
+    messageElement.textContent =
+        "Board reset to starting position.";
+}
+
+
+/* =========================================
+   EVENT LISTENERS
+========================================= */
+
+document.getElementById("analyzeButton").addEventListener(
+    "click",
+    analyzePosition
+);
+
+document.getElementById("resetButton").addEventListener(
+    "click",
+    resetBoard
+);
+
+document.getElementById("loadGameButton").addEventListener(
+    "click",
+    loadSavedGame
+);
+
+document.getElementById("previousMoveButton").addEventListener(
+    "click",
+    moveToPreviousPosition
+);
+
+document.getElementById("nextMoveButton").addEventListener(
+    "click",
+    moveToNextPosition
+);
+
+
+/* =========================================
+   INITIALIZE APPLICATION
+========================================= */
+
+renderStartingBoard();
+
+</script>
+
 </body>
 </html>
-

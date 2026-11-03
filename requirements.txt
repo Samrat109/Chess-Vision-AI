@@ -2,5 +2,9 @@ asgiref==3.13.0
 chess==1.11.2
 Django==6.1.2
 djangorestframework==3.18.3
+gunicorn==26.2.0
+numpy==2.5.4
+opencv-python-headless==5.0.0.93
+pillow==13.0.0
 python-chess==1.999
 sqlparse==0.6.0

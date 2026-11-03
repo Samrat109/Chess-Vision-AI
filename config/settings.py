@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 from pathlib import Path
 import os
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+SECRET_KEY = os.environ.get("django-insecure-yy#0m*q5+_yq%+mcpgtmr!wcrf@bf-23&tu0nnf=^d#x^#9_ep")
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
