@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ChessVision AI",
-  "version": "1.2.0",
-  "description": "Stockfish-powered chess analysis and coaching for completed games and training.",
+  "version": "1.3.0",
+  "description": "Stockfish-powered chess analysis and AI coaching for training and completed games.",
   "permissions": [
     "storage",
     "activeTab"
@@ -24,5 +24,17 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     }
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.chess.com/analysis*",
+        "https://www.chess.com/games/archive/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
 }

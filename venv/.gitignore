@@ -1,2 +1,30 @@
 # Created by venv; see https://docs.python.org/3/library/venv.html
 *
+.env
+venv/
+__pycache__/
+*.pyc
+db.sqlite3
+
+# Environment variables
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+
+# Chrome extension private signing key
+*.pem
+
+# Django
+db.sqlite3
+
+# IDE
+.vscode/
+.idea/

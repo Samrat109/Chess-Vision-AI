@@ -1,5 +1,5 @@
 from django.urls import path
-
+from .views import chess_chat
 from .views import (
        analyze_position,
     create_game,
@@ -24,4 +24,5 @@ urlpatterns = [
     analyze_game_position,
     name="analyze-game-position",
     ),
+    path("chat/", chess_chat, name="chess-chat"),
 ]

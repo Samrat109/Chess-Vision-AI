@@ -5,6 +5,7 @@ const $ = (id) => document.getElementById(id);
 
 $("analyze").addEventListener("click", analyzePosition);
 $("reviewGame").addEventListener("click", loadSavedGame);
+$("syncPosition").addEventListener("click", syncChessPosition);
 
 $("openDashboard").addEventListener("click", () => {
   chrome.tabs.create({ url: `${BASE_URL}/` });
@@ -188,3 +189,61 @@ async function loadSavedGame() {
 }
 
 checkServer();
+
+async function syncChessPosition() {
+    const button = $("syncPosition");
+
+    button.disabled = true;
+    showMessage("Checking Chess.com analysis board...");
+
+    try {
+        const tabs = await chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        });
+
+        const tab = tabs[0];
+
+        if (!tab || !tab.id) {
+            throw new Error("No active browser tab found.");
+        }
+
+        const url = new URL(tab.url);
+
+        const allowedPage =
+            url.hostname === "www.chess.com" &&
+            (
+                url.pathname.startsWith("/analysis") ||
+                url.pathname.startsWith("/games/archive/")
+            );
+
+        if (!allowedPage) {
+            throw new Error(
+                "Open a Chess.com analysis or completed-game review page first."
+            );
+        }
+
+        const response = await chrome.tabs.sendMessage(
+            tab.id,
+            { action: "GET_CHESS_POSITION" }
+        );
+
+        if (!response || !response.success) {
+            throw new Error(
+                response?.message || "Could not detect the board position."
+            );
+        }
+
+        currentFen = response.fen;
+        $("fen").value = currentFen;
+
+        showMessage(
+            "Chess.com position synchronized. Now click Analyze with Stockfish."
+        );
+
+    } catch (error) {
+        showMessage(error.message);
+    } finally {
+        button.disabled = false;
+    }
+}

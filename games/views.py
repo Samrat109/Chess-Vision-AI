@@ -16,6 +16,14 @@ from .serializers import (
 from .engine import analyze_chess_position
 from django.shortcuts import render
 
+from .chatbot import generate_chess_explanation
+
+from openai import (
+    APIConnectionError,
+    APIStatusError,
+    RateLimitError,
+)
+
 @api_view(["POST"])
 def analyze_position(request):
     serializer = PositionSerializer(data=request.data)
@@ -319,3 +327,132 @@ def analyze_game_position(request, game_id, ply):
         ),
         "candidates": analysis["candidates"],
     })
+
+
+@api_view(["POST"])
+def chess_chat(request):
+    """
+    ChessVision AI chatbot.
+    Uses Stockfish for chess analysis and OpenAI for explanations.
+    """
+
+    fen = request.data.get("fen")
+    question = request.data.get("question", "").strip()
+    history = request.data.get("history", [])
+
+    if not fen or not question:
+        return Response(
+            {
+                "success": False,
+                "message": "Both FEN and question are required."
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if len(question) > 1000:
+        return Response(
+            {
+                "success": False,
+                "message": "Question must be 1000 characters or fewer."
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if not isinstance(history, list):
+        return Response(
+            {
+                "success": False,
+                "message": "History must be a list."
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        board = chess.Board(fen)
+
+        if not board.is_valid():
+            raise ValueError("Invalid chess position.")
+
+    except (ValueError, TypeError):
+        return Response(
+            {
+                "success": False,
+                "message": "Invalid chess position or FEN."
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        if board.is_game_over():
+            engine_analysis = {
+                "message": "The game is over.",
+                "candidates": [],
+            }
+        else:
+            engine_analysis = analyze_chess_position(
+                fen=board.fen(),
+                time_limit=1.0,
+                multipv=3,
+            )
+
+        # Keep only a small amount of recent conversation context.
+        safe_history = []
+
+        for item in history[-6:]:
+            if (
+                isinstance(item, dict)
+                and item.get("role") in ("user", "assistant")
+                and isinstance(item.get("content"), str)
+            ):
+                safe_history.append({
+                    "role": item["role"],
+                    "content": item["content"][:1000],
+                })
+
+        answer = generate_chess_explanation(
+            fen=board.fen(),
+            question=question,
+            engine_analysis=engine_analysis,
+            history=safe_history,
+        )
+
+        return Response({
+            "success": True,
+            "fen": board.fen(),
+            "turn": "white" if board.turn == chess.WHITE else "black",
+            "best_moves": engine_analysis.get("candidates", []),
+            "answer": answer,
+        })
+
+    except ValueError as error:
+        return Response(
+            {"success": False, "message": str(error)},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    except RateLimitError:
+        return Response(
+            {
+                "success": False,
+                "message": "OpenAI API rate limit or quota reached."
+            },
+            status=status.HTTP_429_TOO_MANY_REQUESTS,
+        )
+
+    except APIConnectionError:
+        return Response(
+            {
+                "success": False,
+                "message": "Could not connect to OpenAI."
+            },
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+    except (APIStatusError, chess.engine.EngineError, OSError):
+        return Response(
+            {
+                "success": False,
+                "message": "AI or Stockfish service is temporarily unavailable."
+            },
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
