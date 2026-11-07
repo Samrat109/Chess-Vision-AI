@@ -1,0 +1,12 @@
+.git
+.gitignore
+.env
+*.pem
+*.key
+*.crx
+venv/
+.venv/
+__pycache__/
+*.pyc
+db.sqlite3
+chessvision-extension/
